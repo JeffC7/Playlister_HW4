@@ -40,7 +40,8 @@ const CurrentModal = {
     NONE : "NONE",
     DELETE_LIST : "DELETE_LIST",
     EDIT_SONG : "EDIT_SONG",
-    REMOVE_SONG : "REMOVE_SONG"
+    REMOVE_SONG : "REMOVE_SONG",
+    ACCOUNT_ERROR: "ACCOUNT_ERROR"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -209,6 +210,19 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 });
             }
+            case GlobalStoreActionType.SHOW_ACCOUNT_ERROR_MODAL: {
+                return setStore({
+                    currentModal : CurrentModal.ACCOUNT_ERROR,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
             default:
                 return store;
         }
@@ -258,6 +272,7 @@ function GlobalStoreContextProvider(props) {
             payload: {}
         });
         tps.clearAllTransactions();
+        history.push("/");
     }
 
     // THIS FUNCTION CREATES A NEW LIST
@@ -510,6 +525,21 @@ function GlobalStoreContextProvider(props) {
     }
     store.canClose = function() {
         return (store.currentList !== null);
+    }
+    store.showAccountErrorModal = function(){
+        storeReducer({
+            type: GlobalStoreActionType.SHOW_ACCOUNT_ERROR_MODAL,
+            payload: {}
+        });
+    }
+    store.hideAccountErrorModal = function(){
+        storeReducer({
+            type: GlobalStoreActionType.HIDE_MODALS,
+            payload: {}
+        });
+    }
+    store.isAccountErrorModalOpen = () => {
+        return store.currentModal === CurrentModal.ACCOUNT_ERROR;
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME

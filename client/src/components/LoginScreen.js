@@ -1,7 +1,10 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import AuthContext from '../auth'
+import GlobalStoreContext from '../store';
 
 import Copyright from './Copyright'
+
+import MUIAccountErrorModal from './MUIAccountErrorModal'
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -18,18 +21,29 @@ import Typography from '@mui/material/Typography';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
+
+    const [msg, setMsg] = useState("");
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+
         auth.loginUser(
             formData.get('email'),
             formData.get('password')
-        );
+        ).catch(function (error) {
+            setMsg(error.response.data.errorMessage);
+            store.showAccountErrorModal();
+            console.log(error.response.data.errorMessage);
+        });
+
 
     };
 
     return (
+        <div>
+        <MUIAccountErrorModal msg={msg}/>
         <Grid container component="main" sx={{ height: '100vh' }}>
             <CssBaseline />
             <Grid
@@ -112,5 +126,6 @@ export default function LoginScreen() {
                 </Box>
             </Grid>
         </Grid>
+        </div>
     );
 }
